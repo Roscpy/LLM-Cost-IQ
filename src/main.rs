@@ -18,3 +18,5 @@ async fn main() -> anyhow::Result<()> {
 async fn health() -> &'static str {
     "OK"
 }
+
+mod db;
