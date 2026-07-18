@@ -2,9 +2,16 @@
 mod db;
 mod auth;
 mod handlers;
+mod auth;
+mod models;
+mod services;
+mod handlers;
 
+use axum::{Router, routing::{get, post}, middleware};
 use axum::{Router, routing::post, extract::State};
-use sqlx::PgPool;
+use axum::{Router, routing::get};
+use std::net::SocketAddr;
+use tracing::info;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -15,6 +22,10 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", get(health))
         .route("/login", post(handlers::auth::login))
+        .route("/analyze", post(handlers::analyze::analyze_prompt)
+            .layer(middleware::from_fn_with_state(pool.clone(), auth_middleware)))
+        .route("/history", get(handlers::history::get_history)
+            .layer(middleware::from_fn_with_state(pool.clone(), auth_middleware)))
         .with_state(pool);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
@@ -24,9 +35,6 @@ async fn main() -> anyhow::Result<()> {
         .await?;
     Ok(())
 }
-use axum::{Router, routing::get};
-use std::net::SocketAddr;
-use tracing::info;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
