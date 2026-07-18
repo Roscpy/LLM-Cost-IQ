@@ -18,6 +18,7 @@ thiserror = "1"
 jsonwebtoken = "9"
 bcrypt = "0.15"
 chrono = "0.4"
+tiktoken-rs = "0.5" 
 
 [dev-dependencies]
 sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-native-tls", "migrate"] }
